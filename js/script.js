@@ -129,8 +129,6 @@ window.addEventListener('DOMContentLoaded', () => {
     modalCloseBtn.addEventListener('click', closeModal);
 
     modal.addEventListener('click', (e) => {
-        console.log(e.target);
-        console.log(modal);
         if (e.target == modal) {
             closeModal();
         }
@@ -235,4 +233,53 @@ window.addEventListener('DOMContentLoaded', () => {
         '.menu .container',
         'menu__item'
     ).render();
+
+    const forms = document.querySelectorAll('form');
+
+    forms.forEach((form) => {
+        postData(form);
+    });
+
+    const msg = {
+        loading: 'Loading...',
+        success: 'Thanks for submitting our form',
+        failure: 'Somethin went wrong',
+    };
+
+    function postData(form) {
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const statusMessage = document.createElement('div');
+            statusMessage.textContent = msg.loading;
+            form.append(statusMessage);
+
+            const request = new XMLHttpRequest();
+            request.open('POST', 'server.php');
+            request.setRequestHeader('Content-Type', 'multipart/form-data');
+
+            const obj = {};
+            const formData = new FormData(form);
+
+            formData.forEach((val, key) => {
+                obj[key] = val;
+            });
+
+            const json = JSON.stringify(obj);
+            request.send(json);
+
+            request.addEventListener('load', () => {
+                if (request.status == 200) {
+                    console.log(request.response);
+                    statusMessage.textContent = msg.success;
+                    form.reset();
+                    setTimeout(() => {
+                        statusMessage.remove();
+                    }, 2000);
+                } else {
+                    statusMessage.textContent = msg.failure;
+                }
+            });
+        });
+    }
 });
