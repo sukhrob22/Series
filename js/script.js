@@ -202,39 +202,71 @@ window.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    new MenuCard(
-        'img/tabs/1.png',
-        'usual',
-        'Plan "Usual"',
-        ' Lorem ipsum, dolor sit amet consectetur adipisicing elit. Fugit nesciunt facere, sequi exercitationem  praesentium ab cupiditate beatae debitis perspiciatis itaque quaerat id modi corporis delectus ratione nobis  harum voluptatum in.',
-        10,
-        '.menu .container'
-    ).render();
+    axios.get('http://localhost:3000/menu').then((data) => {
+        data.data.forEach(({ img, altimg, title, descr, price }) => {
+            new MenuCard(
+                img,
+                altimg,
+                title,
+                descr,
+                price,
+                '.menu .container'
+            ).render();
+        });
+    });
 
-    new MenuCard(
-        'img/tabs/2.jpg',
-        'plan',
-        'Plan "Permium"',
-        ' Lorem ipsum, dolor sit amet consectetur adipisicing elit. Fugit nesciunt facere, sequi exercitationem  praesentium ab cupiditate beatae debitis perspiciatis itaque quaerat id modi corporis delectus ratione nobis  harum voluptatum in.',
-        20,
-        '.menu .container',
-        'menu__item'
-    ).render();
+    // async function getRecourse(url) {
+    //     const res = await fetch(url);
 
-    new MenuCard(
-        'img/tabs/3.jpg',
-        'vip',
-        'Plan Vip',
-        ' Lorem ipsum, dolor sit amet consectetur adipisicing elit. Fugit nesciunt facere, sequi exercitationem  praesentium ab cupiditate beatae debitis perspiciatis itaque quaerat id modi corporis delectus ratione nobis  harum voluptatum in.',
-        30,
-        '.menu .container',
-        'menu__item'
-    ).render();
+    //     return await res.json();
+    // }
+
+    // getRecourse('http://localhost:3000/menu').then((data) => {
+    //     data.forEach(({ img, altimg, title, descr, price }) => {
+    //         new MenuCard(
+    //             img,
+    //             altimg,
+    //             title,
+    //             descr,
+    //             price,
+    //             '.menu .container'
+    //         ).render();
+    //     });
+    // });
+
+    // new MenuCard(
+    //     'img/tabs/1.png',
+    //     'usual',
+    //     'Plan "Usual"',
+    //     ' Lorem ipsum, dolor sit amet consectetur adipisicing elit. Fugit nesciunt facere, sequi exercitationem  praesentium ab cupiditate beatae debitis perspiciatis itaque quaerat id modi corporis delectus ratione nobis  harum voluptatum in.',
+    //     10,
+    //     '.menu .container'
+    // ).render();
+
+    // new MenuCard(
+    //     'img/tabs/2.jpg',
+    //     'plan',
+    //     'Plan "Permium"',
+    //     ' Lorem ipsum, dolor sit amet consectetur adipisicing elit. Fugit nesciunt facere, sequi exercitationem  praesentium ab cupiditate beatae debitis perspiciatis itaque quaerat id modi corporis delectus ratione nobis  harum voluptatum in.',
+    //     20,
+    //     '.menu .container',
+    //     'menu__item'
+    // ).render();
+
+    // new MenuCard(
+    //     'img/tabs/3.jpg',
+    //     'vip',
+    //     'Plan Vip',
+    //     ' Lorem ipsum, dolor sit amet consectetur adipisicing elit. Fugit nesciunt facere, sequi exercitationem  praesentium ab cupiditate beatae debitis perspiciatis itaque quaerat id modi corporis delectus ratione nobis  harum voluptatum in.',
+    //     30,
+    //     '.menu .container',
+    //     'menu__item'
+    // ).render();
 
     const forms = document.querySelectorAll('form');
 
     forms.forEach((form) => {
-        postData(form);
+        bindPostData(form);
     });
 
     const msg = {
@@ -243,7 +275,23 @@ window.addEventListener('DOMContentLoaded', () => {
         failure: 'Somethin went wrong',
     };
 
-    function postData(form) {
+    async function postData(url, data) {
+        const res = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: data,
+        });
+
+        if (!res.ok) {
+            throw new Error(`Could not fetch ${url}, status ${res.status}`);
+        }
+
+        return await res.json();
+    }
+
+    function bindPostData(form) {
         form.addEventListener('submit', (e) => {
             e.preventDefault();
 
@@ -256,23 +304,26 @@ window.addEventListener('DOMContentLoaded', () => {
             // request.setRequestHeader('Content-Type', 'multipart/form-data');
 
             const formData = new FormData(form);
-            const obj = {};
 
-            formData.forEach((val, key) => {
-                obj[key] = val;
-            });
+            // const obj = {};
+            // formData.forEach((val, key) => {
+            //     obj[key] = val;                       this is't good practis
+            // });
 
+            const json = JSON.stringify(Object.fromEntries(formData.entries()));
             // const json = JSON.stringify(obj);
             // request.send(json);
 
-            fetch('server.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(obj),
-            })
-                .then((data) => data.text())
+            // fetch(' http://localhost:3000/request', {
+            //     method: 'POST',
+            //     headers: {
+            //         'Content-Type': 'application/json',
+            //     },
+            //     body: JSON.stringify(obj),
+            // })
+            //     .then((data) => data.text())
+
+            postData(' http://localhost:3000/request', json)
                 .then((data) => {
                     console.log(data);
                     showThanksModal(msg.success);
