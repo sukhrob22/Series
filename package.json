@@ -22,7 +22,9 @@
     "homepage": "https://github.com/sukhrob22/Series#readme",
     "dependencies": {
         "bcrypt": "^5.1.1",
-        "bootstrap": "^5.3.2"
+        "bootstrap": "^5.3.2",
+        "webpack": "^5.88.2",
+        "webpack-cli": "^5.1.4"
     },
     "devDependencies": {
         "cors": "^2.8.5",

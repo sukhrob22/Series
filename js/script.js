@@ -414,7 +414,7 @@ window.addEventListener('DOMContentLoaded', () => {
     indicators.classList.add('carousel-indicators');
     slider.append(indicators);
 
-    for (let i = 0; i < slider.length; i++) {
+    for (let i = 0; i < slides.length; i++) {
         const dot = document.createElement('li');
         dot.setAttribute('data-slide-to', i + 1);
         dot.classList.add('carousel-dot');
@@ -447,6 +447,11 @@ window.addEventListener('DOMContentLoaded', () => {
         } else {
             current.textContent = slideIndex;
         }
+
+        dots.forEach((dot) => {
+            dot.style.opacity = '.5';
+        });
+        dots[slideIndex - 1].style.opacity = 1;
     });
 
     prev.addEventListener('click', () => {
@@ -470,6 +475,35 @@ window.addEventListener('DOMContentLoaded', () => {
         } else {
             current.textContent = slideIndex;
         }
+
+        dots.forEach((dot) => {
+            dot.style.opacity = '.5';
+        });
+        dots[slideIndex - 1].style.opacity = 1;
+    });
+
+    dots.forEach((dot) => {
+        console.log(dot);
+        dot.addEventListener('click', (e) => {
+            const slideTo = e.target.getAttribute('data-slide-to');
+
+            slideIndex = slideTo;
+            offset = Math.floor(
+                +width.slice(0, width.length - 2) * (slideTo - 1)
+            );
+            slidesField.style.transform = `translateX(-${offset}px)`;
+
+            if (slides.length < 10) {
+                current.textContent = `0${slideIndex}`;
+            } else {
+                current.textContent = slideIndex;
+            }
+
+            dots.forEach((dot) => {
+                dot.style.opacity = '.5';
+            });
+            dots[slideIndex - 1].style.opacity = 1;
+        });
     });
     //*******************************Easy slider********************* */
 
